@@ -25,7 +25,7 @@ def test_create_user_with_existing_username(client, user):
     response = client.post(
         '/users/',
         json={
-            'username': 'testeusername',
+            'username': user.username,
             'email': 'test2@test.com',
             'password': 'password',
         },
@@ -38,7 +38,7 @@ def test_create_user_with_existing_email(client, user):
         '/users/',
         json={
             'username': 'testeusername2',
-            'email': 'test@test.com',
+            'email': user.email,
             'password': 'password',
         },
     )
@@ -62,8 +62,8 @@ def test_read_user(client, user):
     response = client.get('/users/1')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        'username': 'testeusername',
-        'email': 'test@test.com',
+        'username': user.username,
+        'email': user.email,
         'id': 1,
     }
 
@@ -93,9 +93,9 @@ def test_update_user(client, user, token):
     }
 
 
-def test_update_user_with_wrong_user_id(client, token, user):
+def test_update_user_with_wrong_user_id(client, token, user2):
     response = client.put(
-        f'/users/{user.id + 1}',
+        f'/users/{user2.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'testeusername',
@@ -116,9 +116,9 @@ def test_delete_user(client, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_delete_user_with_wrong_user_id(client, token, user):
+def test_delete_user_with_wrong_user_id(client, token, user2):
     response = client.delete(
-        f'/users/{user.id + 1}',
+        f'/users/{user2.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
